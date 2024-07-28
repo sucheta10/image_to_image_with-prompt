@@ -1,0 +1,26 @@
+from google.colab import drive
+drive.mount('/content/drive')
+
+!pip install transformers datasets diffusers[torch] accelerate
+
+import os
+from PIL import Image
+from diffusers import StableDiffusionPipeline
+
+# Load images from Google Drive
+image_folder = '/content/drive/MyDrive/test'
+image_files = [os.path.join(image_folder, f) for f in os.listdir(image_folder) if f.endswith('.jpg')]
+images = [Image.open(img) for img in image_files]
+
+# Load pre-trained Stable Diffusion model
+pipe = StableDiffusionPipeline.from_pretrained("CompVis/stable-diffusion-v1-4")
+
+
+# Generate the image based on the prompt
+prompt = "a dog is sleeping on the floor"
+generated_images = pipe(prompt, num_inference_steps=50).images
+generated_image = generated_images[0]
+
+# Save the generated image to Google Drive
+output_path = '/content/drive/MyDrive/generated_images_lab/labrador_sleeping.jpg'
+generated_image.save(output_path)
